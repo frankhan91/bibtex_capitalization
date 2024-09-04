@@ -5,26 +5,24 @@ def load_words(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
         return [line.strip() for line in file if line.strip() and not line.startswith('#')]
 
-def wrap_capitals_in_word(word):
-    # Find each capital letter and wrap it with {}
-    return re.sub(r'([A-Z])', r'{\1}', word)
-
 # Function to wrap words with {} for LaTeX capitalization preservation
 def wrap_with_braces(content, formatted_words):
     lines = content.split('\n')
     for i, line in enumerate(lines):
         # Only process lines that start with 'title=' (with optional leading spaces)
-        if re.match(r'^\s*title=', line):
+        if re.match(r'^\s*title', line):
+            original_line = line
             for phrase in formatted_words:
                 # Break down the phrase into words and hyphenated parts, then wrap capitals
-                wrapped_phrase = '-'.join([wrap_capitals_in_word(part) for part in phrase.split('-')])
+                wrapped_phrase = ''.join(['{' + char + '}' if char.isupper() else char for char in phrase])
                 # Regex pattern to find the phrase not already wrapped in {}
-                pattern = re.compile(r'(?<!{{)(\b{}\b)(?!}})'.format(re.escape(phrase)), re.IGNORECASE)
-                # Replace the phrase with the wrapped version and print each change
-                modified_line, num_subs = pattern.subn(wrapped_phrase, lines[i])
+                pattern = re.compile(r'(?<!{{)(\b' + re.escape(phrase) + r'\b)(?!}})', re.IGNORECASE)
+                # Replace the phrase with the wrapped version
+                line, num_subs = pattern.subn(wrapped_phrase, line)
                 if num_subs > 0:
-                    print(f"Modified line {i+1:4}: {modified_line}")
-                    lines[i] = modified_line
+                    lines[i] = line
+            if original_line != line:
+                print(f"Modified line {i+1:4}: {line}")
     return '\n'.join(lines)
 
 # Main function to process the bib file
