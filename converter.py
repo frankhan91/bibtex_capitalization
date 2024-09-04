@@ -1,8 +1,9 @@
 import re
+import argparse
 
 def load_words(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
-        return [line.strip() for line in file if line.strip()]
+        return [line.strip() for line in file if line.strip() and not line.startswith('#')]
 
 def wrap_capitals_in_word(word):
     # Find each capital letter and wrap it with {}
@@ -20,9 +21,10 @@ def wrap_with_braces(content, formatted_words):
                 # Regex pattern to find the phrase not already wrapped in {}
                 pattern = re.compile(r'(?<!{{)(\b{}\b)(?!}})'.format(re.escape(phrase)), re.IGNORECASE)
                 # Replace the phrase with the wrapped version and print each change
-                lines[i], num_subs = pattern.subn(wrapped_phrase, line)
+                modified_line, num_subs = pattern.subn(wrapped_phrase, lines[i])
                 if num_subs > 0:
-                    print(f"Modified line {i+1:4}: {lines[i]}")
+                    print(f"Modified line {i+1:4}: {modified_line}")
+                    lines[i] = modified_line
     return '\n'.join(lines)
 
 # Main function to process the bib file
@@ -41,6 +43,8 @@ def process_bib_file(bib_file_path, formatted_words_path):
 
 
 if __name__ == "__main__":
-    bib_file_path = 'ref.bib'  # Replace with your .bib file path
-    formatted_words_path = 'formatted_words.txt'  # File storing words to be capitalized (e.g., "PDE", "Monte Carlo")
-    process_bib_file(bib_file_path, formatted_words_path)
+    parser = argparse.ArgumentParser(description='Process a .bib file.')
+    parser.add_argument('-b', '--bib', default='test.bib', help='Path to the .bib file')
+    parser.add_argument('-w', '--words', default='formatted_words.txt', help='Path to the file storing correctly captialized words')
+    args = parser.parse_args()
+    process_bib_file(args.bib, args.words)
