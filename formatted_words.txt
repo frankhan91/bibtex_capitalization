@@ -32,9 +32,11 @@ Monte Carlo
 ## ===== All-Caps Acronyms =====
 BSDE
 BSDEs
+CNN
+DGM
+DNN
 FBSDE
 FBSDEs
-DGM
 GAN
 GPU
 GPUs
@@ -44,6 +46,8 @@ LIBOR
 LQR
 MFG
 MFGs
+ODE
+ODEs
 PDE
 PDEs
 PINN
@@ -57,4 +61,5 @@ SDEs
 DeePMD
 DeepHAM
 DeePCG
+ReLU
 xVA
